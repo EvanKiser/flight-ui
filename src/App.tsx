@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import SearchForm from './components/SearchForm';
+import FlightList from './components/FlightList';
 
-function App() {
+const App: React.FC = () => {
+  const [flights, setFlights] = useState<string[]>([]);
+  const [searchData, setSearchData] = useState<null | { [key: string]: string }>(null);
+
+  const handleSearch = (data: { origin: string, destination: string, departureDate: string, returnDate: string }) => {
+    setSearchData(data);
+    // Mock flight data; In real-world, you would make an API call here.
+    setFlights(['Flight 1', 'Flight 2', 'Flight 3']);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {!searchData ? (
+        <SearchForm onSearch={handleSearch} />
+      ) : (
+        <FlightList flights={flights} />
+      )}
     </div>
   );
-}
+};
 
 export default App;
