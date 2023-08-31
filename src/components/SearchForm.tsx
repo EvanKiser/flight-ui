@@ -6,7 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import axios from 'axios';
 
 interface Props {
-  onSearch: (data: { origin: string, destination: string, departureDate: string, returnDate: string }) => void;
+  onSearch: (data: { origin_code: string, destination_code: string, departureDate: string, returnDate: string }) => void;
 }
 
 interface Airport {
@@ -64,9 +64,7 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
     if (origin.length === 3) {
       (async () => {
         const response = await axios.get(`http://127.0.0.1:5000/flight/predictive_cities/${origin}`);
-        console.log(response)
         const airports: Airport[] = response.data;
-        console.log(airports)
         const airportCodes = airports.map((airport: Airport) => {
           return airport.airport_code + " " + airport.city_name + ", " + airport.region
         });
@@ -80,15 +78,21 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
       active = false;
     };
   }, [origin]);
+
   const handleSubmit = () => {
-    if (departureDate && returnDate) {
-      onSearch({
-        origin,
-        destination,
-        departureDate: departureDate.toISOString(),
-        returnDate: returnDate.toISOString(),
-      });
+    console.log(origin, destination, departureDate, returnDate)
+    if (!origin || !destination || !departureDate || !returnDate) {
+      alert('All fields are required.');
+      return; 
     }
+    const origin_code = origin.split(' ')[0]
+    const destination_code = destination.split(' ')[0]
+    onSearch({
+      origin_code,
+      destination_code,
+      departureDate: departureDate.toISOString(),
+      returnDate: returnDate.toISOString(),
+    });
   };
 
   return (
@@ -102,7 +106,7 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
                 options={options}
                 getOptionLabel={(option) => option}
                 onInputChange={(event, newInputValue) => setOrigin(newInputValue)}
-                renderInput={(params) => <TextField {...params} label="Origin" />}
+                renderInput={(params) => <TextField {...params} label="Origin" required />}
                 renderOption={(props, option, { selected }) => (
                   <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
                     {option}
@@ -116,7 +120,7 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
                 }}
                 noOptionsText={null}
                 PaperComponent={({ children }) =>
-                  // Only render Paper (dropdown) if there are options or if the input value length is <= 3
+                  // Only render Paper (dropdown) if there are options or if the input value length is >= 3
                   (options.length > 0 && origin.length >= 3) ? <Paper>{children}</Paper> : null
                 }
               />
@@ -128,7 +132,7 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
                 defaultValue={"Where to?"}
                 getOptionLabel={(option) => option}
                 onInputChange={(event, newInputValue) => setDestination(newInputValue)}
-                renderInput={(params) => <TextField {...params} label="Destination" placeholder="Where ya headed?" />}
+                renderInput={(params) => <TextField {...params} label="Destination" placeholder="Where ya headed?" required/>}
                 renderOption={(props, option, { selected }) => (
                   <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
                     {option}
