@@ -23,7 +23,7 @@ const FlightList: FC<Props> = ({ flights }) => {
       <h1>Available Flights</h1>
       <ul>
         {flights.map((flight, index) => (
-          <li key={index}>{`${flight.carrier}: ${flight.origin} -> ${flight.destination} in ${flight.cabin_class} for ${flight.point_cost} points and ${flight.dollar_cost}`}</li>
+          <li key={index}>{`${flight.carrier}: ${flight.origin} -> ${flight.destination} in ${flight.cabin_class} for ${flight.point_cost} points and $${flight.dollar_cost}`}</li>
         ))}
       </ul>
     </div>
