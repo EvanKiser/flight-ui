@@ -25,12 +25,11 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
 
   useEffect(() => {
     const fetchDefaultOrigin = async () => {
-      const response = await axios.get(`${process.env.API_URL}/flight/default_origin`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/flight/default_origin`);
       const newOrigin: Airport = response.data
       const newOriginName = (
         newOrigin.airport_code + " " + newOrigin.city_name + ", " + newOrigin.region
       )
-      console.log(newOriginName)
       setOrigin(newOriginName);
     };
 
@@ -42,7 +41,7 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
 
     if (destination.length === 3) {
       (async () => {
-        const response = await axios.get(`${process.env.API_URL}/flight/predictive_cities/${destination}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/flight/predictive_cities/${destination}`);
         const airports: Airport[] = response.data;
         const airportCodes = airports.map((airport: Airport) => {
           return airport.airport_code + " " + airport.city_name + ", " + airport.region;
@@ -63,7 +62,7 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
 
     if (origin.length === 3) {
       (async () => {
-        const response = await axios.get(`${process.env.API_URL}/flight/predictive_cities/${origin}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/flight/predictive_cities/${origin}`);
         const airports: Airport[] = response.data;
         const airportCodes = airports.map((airport: Airport) => {
           return airport.airport_code + " " + airport.city_name + ", " + airport.region
@@ -80,7 +79,6 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
   }, [origin]);
 
   const handleSubmit = () => {
-    console.log(origin, destination, departureDate, returnDate)
     if (!origin || !destination || !departureDate || !returnDate) {
       alert('All fields are required.');
       return; 
