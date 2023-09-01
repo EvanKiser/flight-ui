@@ -8,7 +8,7 @@ const App: React.FC = () => {
   const [searchData, setSearchData] = useState<null | { [key: string]: string }>(null);
 
   const getFlightList = async (payload: { origin_code: string, destination_code: string, departureDate: string, returnDate: string }) => {
-    const response = await axios.post('http://127.0.0.1:5000/flight/search', payload)
+    const response = await axios.post(`${process.env.API_URL}/flight/search`, payload)
     .then(response => {
       console.log(response.data)
       return response.data
