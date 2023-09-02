@@ -15,12 +15,14 @@ export interface Flight {
 
 interface Props {
   flights: Flight[];
+  isLoading: boolean;
 }
 
-const FlightList: FC<Props> = ({ flights }) => {
+const FlightList: FC<Props> = ({ flights, isLoading }) => {
   return (
     <div>
       <h1>Available Flights</h1>
+      {isLoading && <p>Loading...</p>}
       <Grid container spacing={3}>
         {flights.map((flight, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
