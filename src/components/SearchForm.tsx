@@ -154,7 +154,8 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
                   <DatePicker
                     label="Departure Date"
                     value={departureDate}
-                    onChange={(newDate: Date | null) => setDepartureDate(newDate)}
+                    onChange={(newDate) => setDepartureDate(newDate)}
+                    maxDate={returnDate}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
@@ -162,7 +163,8 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
                   <DatePicker
                     label="Return Date"
                     value={returnDate}
-                    onChange={(newDate: Date | null) => setReturnDate(newDate)}
+                    onChange={(newDate) => setReturnDate(newDate)}
+                    minDate={departureDate}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
