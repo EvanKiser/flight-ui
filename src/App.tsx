@@ -8,15 +8,22 @@ import axios from 'axios';
 
 const App: React.FC = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
-  const [searchData, setSearchData] = useState<null | { [key: string]: string }>(null);
+  const [searchData, setSearchData] = useState<null | { [key: string]: string | null }>(null);
   const [isLoading, setIsLoading] = useState(false); // New state for loading status
 
   const NavBar = () => {
     const location = useLocation();
     return (
       <nav style={{ position: 'absolute', top: 0, left: 0, padding: '15px' }}>
-        <Button variant="contained" color="primary" component={Link} to="/" style={{ marginRight: '20px' }}>
-          Search Flights
+        <Button 
+          variant="contained" 
+          color="primary" 
+          component={Link} 
+          to="/"
+          onClick={() => setSearchData(null)}
+          style={{ marginRight: '20px' }}
+        >
+          Home
         </Button>
         {location.pathname !== '/signup' && (
           <Button variant="contained" color="secondary" component={Link} to="/signup">
@@ -27,7 +34,7 @@ const App: React.FC = () => {
     );
   };  
 
-  const getFlightList = async (payload: { origin_code: string, destination_code: string, departureDate: string, returnDate: string }) => {
+  const getFlightList = async (payload: { origin_code: string, destination_code: string, departureDate: string, returnDate: string | null }) => {
     setIsLoading(true); // Set loading to true before the API call
     const response = await axios.post(`${process.env.REACT_APP_API_URL}/flight/search`, payload)
     .then(response => {
@@ -39,7 +46,7 @@ const App: React.FC = () => {
     return response;
   };
 
-  const handleSearch = async (data: { origin_code: string, destination_code: string, departureDate: string, returnDate: string }) => {
+  const handleSearch = async (data: { origin_code: string, destination_code: string, departureDate: string, returnDate: string | null }) => {
     setSearchData(data);
     try {
       const flightsResponse = await getFlightList(data); 
