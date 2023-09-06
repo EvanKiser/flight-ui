@@ -82,7 +82,9 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
     };
   }, [origin]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!origin || !destination || !departureDate || (!returnDate && tripType === 'round_trip') ) {
       alert('All fields are required.');
       return;
@@ -101,7 +103,8 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
     <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
       <Paper elevation={3} style={{ padding: '50px', width: '400px', borderRadius: '20px' }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Grid container direction="column" spacing={3}>
+          <form onSubmit={handleSubmit}>
+            <Grid container direction="column" spacing={3}>
             <Grid item xs={12}>
             <TextField
               select
@@ -198,11 +201,12 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
               </Grid>
             </Grid>
             <Grid item xs={12}>
-              <Button fullWidth variant="contained" color="primary" onClick={handleSubmit}>
-                Search
-              </Button>
+                <Button fullWidth variant="contained" color="primary" type="submit">
+                  Search
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
+          </form>
         </LocalizationProvider>
       </Paper>
     </div>
