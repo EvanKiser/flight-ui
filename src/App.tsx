@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import { BrowserRouter as Router, Route, Link, Routes, useLocation } from 'react-router-dom';
-import SearchForm from './components/SearchForm';
+import SearchForm from './components/SearchForm2';
 import SignupForm from './components/SignupFrom';
-import FlightList, { Flight } from './components/FlightList';
+import FlightList from './components/FlightList';
+import { Flight }  from './types/types';
 import axios from 'axios';
 
 const App: React.FC = () => {
