@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -6,11 +6,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-
-interface Props {
-  onSearch: (data: { origin_code: string, destination_code: string, departureDate: string, returnDate: string | null }) => void;
-}
 
 interface Airport {
   airport_code: string
@@ -18,14 +15,16 @@ interface Airport {
   region: string
 }
 
-const SearchForm: FC<Props> = ({ onSearch }) => {
+const SearchForm: React.FC = () => {
   const [origin, setOrigin] = React.useState('');
   const [destination, setDestination] = React.useState('');
-  const [departureDate, setDepartureDate] = React.useState<Date | null>(null);
-  const [returnDate, setReturnDate] = React.useState<Date | null>(null);
+  const [departureDate, setDepartureDate] = React.useState<dayjs.Dayjs | null>(null);
+  const [returnDate, setReturnDate] = React.useState<dayjs.Dayjs | null>(null);
   const [options, setOptions] = useState<string[]>([]);
   const [destinationOptions, setDestinationOptions] = useState<string[]>([]);
   const [tripType, setTripType] = React.useState('round_trip');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDefaultOrigin = async () => {
@@ -91,12 +90,11 @@ const SearchForm: FC<Props> = ({ onSearch }) => {
     }
     const origin_code = origin.split(' ')[0];
     const destination_code = destination.split(' ')[0];
-    onSearch({
-      origin_code,
-      destination_code,
-      departureDate: departureDate.toISOString(),
-      returnDate: returnDate ? returnDate.toISOString() : null,
-    });
+    
+    const departureDateString = departureDate.format('MM-DD-YYYY');
+    const returnDateString = returnDate ? returnDate.format('MM-DD-YYYY') : null;
+
+    navigate(`/flights?oc=${origin_code}&dc=${destination_code}&dd=${departureDateString}&rd=${returnDateString}`);
   };
 
   return (

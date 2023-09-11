@@ -1,12 +1,9 @@
-import React, { FC } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
 import FlightIcon from '@mui/icons-material/Flight';
 import { Flight } from '../types/types';
-
-interface Props {
-  flights: Flight[];
-  isLoading: boolean;
-}
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -19,7 +16,36 @@ const formatTime = (date: Date | string) => {
   return `${hours}:${minutes} ${ampm}`;
 };
 
-const FlightList: FC<Props> = ({ flights, isLoading }) => {
+const FlightList: React.FC = () => {
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const location = useLocation();
+
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const payload = {
+      origin_code: query.get('oc'),
+      destination_code: query.get('dc'),
+      departureDate: query.get('dd'),
+      returnDate: query.get('rd'),
+    };
+    const getFlightList = async () => {
+      if (flights.length > 0) return;
+      setIsLoading(true);
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/flight/search`, payload)
+      .then(response => {
+        setFlights(response.data)
+        return response.data
+      })
+      .catch(error => console.log(error))
+      .finally(() => setIsLoading(false)); // Set loading back to false after the API call
+      return response;
+    };
+    getFlightList();    
+  });
+
   return (
     <div style={{ width: '100%', padding: '0 20px' }}>
       <h1>Available Flights</h1>
