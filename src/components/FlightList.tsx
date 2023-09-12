@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Paper, Typography, Grid, Button } from '@mui/material';
-import FlightIcon from '@mui/icons-material/Flight';
+import { Paper, Typography, Grid, Button } from '@mui/material';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
