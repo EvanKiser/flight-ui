@@ -70,18 +70,15 @@ const FlightList: React.FC = () => {
                     <Typography variant="h5" style={{ fontWeight: 'bold' }}>
                       {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)}
                     </Typography>
-                    <Typography variant="h6">
-                      {flight.carrier}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      {flight.cabin_class}
+                    <Typography variant="h6" color='grey'>
+                    {flight.cabin_class} | {flight.carrier}
                     </Typography>
                   </Grid>
                   <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
                     <Typography variant="h5" style={{ textAlign: 'left' }}>
                       {flight.duration.hours} hr {flight.duration.minutes} min
                     </Typography>
-                    <Typography variant="subtitle1" color='grey' gutterBottom style={{ textAlign: 'left' }}>
+                    <Typography variant="h6" color='grey' gutterBottom style={{ textAlign: 'left' }}>
                       {`${flight.origin}-${flight.destination}`}
                     </Typography>
                   </Grid>
@@ -90,7 +87,7 @@ const FlightList: React.FC = () => {
                       {flight.stop_count === 0 ? 'Nonstop' : flight.stop_count === 1 ? '1 Stop' : `${flight.stop_count} Stops`}
                     </Typography>
                     {flight.stop_count === 1 ? (
-                      <Typography variant="subtitle1" color='grey' gutterBottom style={{ textAlign: 'left' }}>
+                      <Typography variant="h6" color='grey' gutterBottom style={{ textAlign: 'left' }}>
                         {flight.layover_duration.hours} hr {flight.layover_duration.minutes} min {flight.segments[0]!.layover!.layover_airport}
                       </Typography>
                     ): (flight.stop_count > 1 ? (
@@ -101,9 +98,9 @@ const FlightList: React.FC = () => {
                   </Grid>
                   <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
                     <Typography variant="h5">
-                      {flight.point_cost} points
+                      {flight.point_cost} Points
                     </Typography>
-                    <Typography variant="h6">
+                    <Typography variant="h6" color='grey'>
                       +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.dollar_cost)}
                     </Typography>
                   </Grid>
