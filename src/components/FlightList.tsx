@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
+import { Card, CardContent, Paper, Typography, Grid, Button } from '@mui/material';
 import FlightIcon from '@mui/icons-material/Flight';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
@@ -9,19 +9,23 @@ const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   let hours = dateObj.getHours();
   let minutes: number | string = dateObj.getMinutes();
-  const ampm = hours >= 12 ? 'pm' : 'am';
+  const ampm = hours >= 12 ? 'PM' : 'AM';
   hours %= 12;
   hours = hours || 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0' + minutes : minutes;
-  return `${hours}:${minutes} ${ampm}`;
+  return `${hours}:${minutes}${ampm}`;
+};
+
+const getCompnayLogo = (carrier: string) => {
+  return process.env.PUBLIC_URL + `/airline_icons/${carrier.toLowerCase()}.png`;
 };
 
 const FlightList: React.FC = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedFlightIndex, setExpandedFlightIndex] = useState<number | null>(null);
 
   const location = useLocation();
-
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -33,15 +37,17 @@ const FlightList: React.FC = () => {
     };
     const getFlightList = async () => {
       if (flights.length > 0) return;
-      setIsLoading(true);
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/flight/search`, payload)
-      .then(response => {
-        setFlights(response.data)
-        return response.data
-      })
-      .catch(error => console.log(error))
-      .finally(() => setIsLoading(false)); // Set loading back to false after the API call
-      return response;
+      if (!isLoading) {
+        setIsLoading(true);
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/flight/search`, payload)
+        .then(response => {
+          setFlights(response.data)
+          return response.data
+        })
+        .catch(error => console.log(error))
+        .finally(() => setIsLoading(false)); // Set loading back to false after the API call
+        return response;
+      }
     };
     getFlightList();    
   });
@@ -53,46 +59,81 @@ const FlightList: React.FC = () => {
       {flights.length === 0 && !isLoading ? (
         <p>No flights available.</p>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} direction="row" justifyContent="center">
           {flights.map((flight, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="h5" gutterBottom>
-                    {flight.carrier} - {flight.cabin_class}
-                  </Typography>
-                  <Typography variant="subtitle1" gutterBottom>
-                    <FlightIcon /> {flight.origin} {'>'} {flight.destination}
-                  </Typography>
-                  <Typography gutterBottom>
-                    {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)} | {flight.duration.hours}h {flight.duration.minutes}m
-                  </Typography>
-                  <Typography gutterBottom variant="h6">
-                    <strong>${flight.dollar_cost}</strong> or {flight.point_cost} points
-                  </Typography>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Segments:
-                  </Typography>
-                  {flight.segments.map((segment, i) => (
-                    <div key={i} style={{ paddingLeft: '15px' }}>
-                      <Typography gutterBottom>
-                        {segment.flight_num} - {segment.aircraft_type}
+            <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+              <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px' }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
+                    <img src={getCompnayLogo(flight.carrier)} alt={`${flight.carrier} logo`} style={{ width: '50px', height: '50px' }} />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="h5" style={{ fontWeight: 'bold' }}>
+                      {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)}
+                    </Typography>
+                    <Typography variant="h6">
+                      {flight.carrier}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                      {flight.cabin_class}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Typography variant="h5" style={{ textAlign: 'left' }}>
+                      {flight.duration.hours} hr {flight.duration.minutes} min
+                    </Typography>
+                    <Typography variant="subtitle1" color='grey' gutterBottom style={{ textAlign: 'left' }}>
+                      {`${flight.origin}-${flight.destination}`}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Typography variant="h5" style={{ textAlign: 'left' }}>
+                      {flight.stop_count === 0 ? 'Nonstop' : flight.stop_count === 1 ? '1 Stop' : `${flight.stop_count} Stops`}
+                    </Typography>
+                    {flight.stop_count === 1 ? (
+                      <Typography variant="subtitle1" color='grey' gutterBottom style={{ textAlign: 'left' }}>
+                        {flight.layover_duration.hours} hr {flight.layover_duration.minutes} min {flight.segments[0]!.layover!.layover_airport}
                       </Typography>
-                      <Typography gutterBottom>
-                        {formatTime(segment.departure_time)} ({segment.origin}) {'>'} {formatTime(segment.arrival_time)} ({segment.destination}) | {segment.flight_time.hours}h {segment.flight_time.minutes}m
+                    ): (flight.stop_count > 1 ? (
+                      <Typography variant="subtitle1" color='grey' gutterBottom style={{ textAlign: 'left' }}>
+                        hey
                       </Typography>
-                      {segment.layover && (
-                        <Typography gutterBottom>
-                          Layover: {segment.layover.duration?.hours}h {segment.layover.duration?.minutes}m at {segment.layover.layover_airport}
-                        </Typography>
-                      )}
-                    </div>
-                  ))}
-                  <Button variant="contained" color="primary" style={{ marginTop: '10px' }}>
-                    Book Now
-                  </Button>
-                </CardContent>
-              </Card>
+                    ) : null )}
+                  </Grid>
+                  <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Typography variant="h5">
+                      {flight.point_cost} points
+                    </Typography>
+                    <Typography variant="h6">
+                      +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.dollar_cost)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={1} style={{ textAlign: 'right' }}>
+                    <Button onClick={() => setExpandedFlightIndex(expandedFlightIndex === index ? null : index)}>
+                      <img src={process.env.PUBLIC_URL + '/expand_arrow.png'} alt='down arrow' style={{ width: '40px', height: '40px' }} />
+                    </Button>
+                  </Grid>
+                  {expandedFlightIndex === index && (
+                    <Grid item xs={12}>
+                      {flight.segments.map((segment, i) => (
+                        <div key={i} style={{ paddingLeft: '15px' }}>
+                          <Typography gutterBottom>
+                            {segment.flight_num} - {segment.aircraft_type}
+                          </Typography>
+                          <Typography gutterBottom>
+                            {formatTime(segment.departure_time)} ({segment.origin}) {'>'} {formatTime(segment.arrival_time)} ({segment.destination}) | {segment.flight_time.hours}h {segment.flight_time.minutes}m
+                          </Typography>
+                          {segment.layover && (
+                            <Typography gutterBottom>
+                              Layover: {segment.layover.duration?.hours}h {segment.layover.duration?.minutes}m at {segment.layover.layover_airport}
+                            </Typography>
+                          )}
+                        </div>
+                      ))}
+                    </Grid>
+                  )}
+                </Grid>
+              </Paper>
             </Grid>
           ))}
         </Grid>

@@ -27,7 +27,7 @@ export interface Segment {
         duration?: Duration;
     } | null;
 }
-  
+
 export interface Flight {
     carrier: string;
     origin: string;
@@ -35,9 +35,10 @@ export interface Flight {
     departure_time: Date;
     arrival_time: Date;
     point_cost: number;
-    dollar_cost: string;
+    dollar_cost: number;
     duration: Duration;
     cabin_class: string;
     segments: Segment[];
     stop_count: number;
+    layover_duration: Duration;
 }
