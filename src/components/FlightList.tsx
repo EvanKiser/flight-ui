@@ -52,7 +52,7 @@ const FlightList: React.FC = () => {
   });
 
   return (
-    <div style={{ width: '100%', padding: '0 20px' }}>
+    <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
       <h1>Available Flights</h1>
       {isLoading && <p>Loading...</p>}
       {flights.length === 0 && !isLoading ? (
@@ -61,10 +61,10 @@ const FlightList: React.FC = () => {
         <Grid container spacing={3} direction="row" justifyContent="center">
           {flights.map((flight, index) => (
             <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-              <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px' }}>
+              <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px', borderRadius: '20px' }}>
                 <Grid container spacing={2}>
                   <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
-                    <img src={getCompnayLogo(flight.carrier)} alt={`${flight.carrier} logo`} style={{ width: '50px', height: '50px' }} />
+                  <img src={getCompnayLogo(flight.carrier)} alt={`${flight.carrier} logo`} style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
                   </Grid>
                   <Grid item xs={4}>
                     <Typography variant="h5" style={{ fontWeight: 'bold' }}>
@@ -110,24 +110,39 @@ const FlightList: React.FC = () => {
                     </Button>
                   </Grid>
                   {expandedFlightIndex === index && (
-                    <Grid item xs={12}>
-                      {flight.segments.map((segment, i) => (
-                        <div key={i} style={{ paddingLeft: '15px' }}>
-                          <Typography gutterBottom>
-                            {segment.flight_num} - {segment.aircraft_type}
-                          </Typography>
-                          <Typography gutterBottom>
-                            {formatTime(segment.departure_time)} ({segment.origin}) {'>'} {formatTime(segment.arrival_time)} ({segment.destination}) | {segment.flight_time.hours}h {segment.flight_time.minutes}m
-                          </Typography>
-                          {segment.layover && (
-                            <Typography gutterBottom>
+                  <Grid item xs={12}>
+                    {flight.segments.map((segment, i) => (
+                      <div key={i} style={{ padding: '15px', border: '1px solid #ccc', margin: '10px 0', borderRadius: '8px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
+                        <Typography gutterBottom style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+                          Segment {i+1}: {segment.flight_num} - {segment.aircraft_type}
+                        </Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={4}>
+                            <Typography variant="subtitle1">Departure</Typography>
+                            <Typography>{formatTime(segment.departure_time)}</Typography>
+                            <Typography>({segment.origin})</Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography variant="subtitle1">Arrival</Typography>
+                            <Typography>{formatTime(segment.arrival_time)}</Typography>
+                            <Typography>({segment.destination})</Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography variant="subtitle1">Duration</Typography>
+                            <Typography>{segment.flight_time.hours}h {segment.flight_time.minutes}m</Typography>
+                          </Grid>
+                        </Grid>
+                        {segment.layover && (
+                          <div style={{ backgroundColor: '#e0e0e0', padding: '10px', borderRadius: '8px', margin: '10px 0' }}>
+                            <Typography gutterBottom style={{ fontWeight: 'bold' }}>
                               Layover: {segment.layover.duration?.hours}h {segment.layover.duration?.minutes}m at {segment.layover.layover_airport}
                             </Typography>
-                          )}
-                        </div>
-                      ))}
-                    </Grid>
-                  )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </Grid>
+                )}
                 </Grid>
               </Paper>
             </Grid>

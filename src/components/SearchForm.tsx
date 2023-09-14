@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon } from '@mui/material';
+import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon, Typography } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -22,7 +22,7 @@ const SearchForm: React.FC = () => {
   const [returnDate, setReturnDate] = React.useState<dayjs.Dayjs | null>(null);
   const [options, setOptions] = useState<string[]>([]);
   const [destinationOptions, setDestinationOptions] = useState<string[]>([]);
-  const [tripType, setTripType] = React.useState('round_trip');
+  const [tripType, setTripType] = React.useState('one_way');
 
   const navigate = useNavigate();
 
@@ -98,7 +98,15 @@ const SearchForm: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <Typography variant="h1" style={{ fontFamily: '"Roboto Slab", serif', fontWeight: 500, color: '#333', marginBottom: '10px' }}>
+          Points Party
+        </Typography>
+        <Typography variant="h4" style={{ fontFamily: '"Roboto", sans-serif', color: 'grey' }}>
+          Google Flights for Points
+        </Typography>
+      </div>
       <Paper elevation={3} style={{ padding: '50px', width: '400px', borderRadius: '20px' }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <form onSubmit={handleSubmit}>
@@ -107,9 +115,9 @@ const SearchForm: React.FC = () => {
             <TextField
               select
               fullWidth
-              value={tripType}
-              onChange={(e) => setTripType(e.target.value)}
+              value="one_way"
               variant="outlined"
+              disabled
               sx={{ 
                 width: '50%',
                 '.MuiOutlinedInput-root': { borderRadius: '8px' },

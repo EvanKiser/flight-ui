@@ -9,17 +9,33 @@ const App: React.FC = () => {
 
   const NavBar = () => {
     return (
-      <nav style={{ position: 'absolute', top: 0, left: 0, padding: '15px' }}>
+      <nav style={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        padding: '15px', 
+        width: '100%', 
+        boxSizing: 'border-box', 
+        background: '#fff', 
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center'
+      }}>
+        <Button 
+          component={Link} 
+          to="/"
+          style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', textTransform: 'none' }}
+        >
+          Points Party
+        </Button>
         <Button 
           variant="contained" 
           color="primary" 
           component={Link} 
-          to="/"
-          style={{ marginRight: '20px' }}
+          to="/signup"
+          style={{ textTransform: 'none', fontSize: '16px' }}
         >
-          Home
-        </Button>
-        <Button variant="contained" color="secondary" component={Link} to="/signup">
           Signup for Mailing List
         </Button>
       </nav>
@@ -28,7 +44,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="App" style={{ paddingTop: '60px' }}>
+      <div className="App" style={{ paddingTop: '60px', background: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
         <NavBar />
         <Routes>
           <Route path="/signup" element={<SignupForm />} />
