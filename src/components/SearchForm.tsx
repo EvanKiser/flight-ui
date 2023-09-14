@@ -101,7 +101,7 @@ const SearchForm: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
         <Typography variant="h1" style={{ fontFamily: '"Roboto Slab", serif', fontWeight: 500, color: '#333', marginBottom: '10px' }}>
-          Points Party
+          PointsParty.io
         </Typography>
         <Typography variant="h4" style={{ fontFamily: '"Roboto", sans-serif', color: 'grey' }}>
           Google Flights for Points

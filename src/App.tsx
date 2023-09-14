@@ -27,7 +27,7 @@ const App: React.FC = () => {
           to="/"
           style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', textTransform: 'none' }}
         >
-          Points Party
+          PointsParty.io
         </Button>
         <Button 
           variant="contained" 
@@ -44,7 +44,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="App" style={{ paddingTop: '60px', background: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
+      <div className="App" style={{ paddingTop: '60px', background: '#ffffff' }}>
         <NavBar />
         <Routes>
           <Route path="/signup" element={<SignupForm />} />

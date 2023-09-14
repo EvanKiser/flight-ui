@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Grid, Button } from '@mui/material';
+import { Paper, Typography, Grid, Button, Pagination } from '@mui/material';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -53,16 +53,24 @@ const FlightList: React.FC = () => {
 
   return (
     <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
-      <h1>Available Flights</h1>
-      {isLoading && <p>Loading...</p>}
+      <Typography variant="h4" style={{ textAlign: 'center', margin: '40px 0 20px 0' }}> {/* Increased top margin */}
+        Available Flights
+      </Typography>
+      {isLoading && 
+        <Typography variant="h6" style={{ textAlign: 'center', marginTop: '20px' }}> {/* Centered loading message */}
+          Loading...
+        </Typography>
+      }
       {flights.length === 0 && !isLoading ? (
-        <p>No flights available.</p>
-      ) : (
+        <Typography variant="h6" style={{ textAlign: 'center', marginTop: '20px' }}> {/* Centered no flights message */}
+          No flights available.
+        </Typography>
+      ) : (  
         <Grid container spacing={3} direction="row" justifyContent="center">
           {flights.map((flight, index) => (
             <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-              <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px', borderRadius: '20px' }}>
-                <Grid container spacing={2}>
+              <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px', borderRadius: '20px', minHeight: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <Grid container spacing={2} style={{ width: '100%', textAlign: 'center' }}>
                   <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
                   <img src={getCompnayLogo(flight.carrier)} alt={`${flight.carrier} logo`} style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
                   </Grid>
