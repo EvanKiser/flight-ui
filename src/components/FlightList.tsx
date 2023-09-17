@@ -6,8 +6,9 @@ import axios from 'axios';
 
 const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  let hours = dateObj.getHours();
-  let minutes: number | string = dateObj.getMinutes();
+  let hours = dateObj.getUTCHours(); // Gets the hour in UTC time
+  let minutes: number | string = dateObj.getUTCMinutes(); // Gets the minutes in UTC time
+  console.log(hours, minutes)
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours %= 12;
   hours = hours || 12; // the hour '0' should be '12'
@@ -28,6 +29,7 @@ const FlightList: React.FC = () => {
   const [itemsPerPage] = useState(20); // New state variable for items per page
   const [filterCriteria, setFilterCriteria] = useState(''); // New state variable for filter criteria
   const [uniqueCarriers, setUniqueCarriers] = useState<string[]>([]); // New state variable for unique carriers
+  const [uniqueCabinClasses, setUniqueCabinClasses] = useState<string[]>([]); // New state variable for unique carriers
   const [cabinClassFilter, setCabinClassFilter] = useState(''); // New state variable for cabin class filter
   const [stopCountFilter, setStopCountFilter] = useState<number | null>(null); // New state variable for stop count filter
 
@@ -36,6 +38,11 @@ const FlightList: React.FC = () => {
   useEffect(() => {
     const carriers = Array.from(new Set(flights.map(flight => flight.carrier)));
     setUniqueCarriers(carriers);
+  }, [flights]);
+
+  useEffect(() => {
+    const cabin_classes = Array.from(new Set(flights.map(flight => flight.cabin_class)));
+    setUniqueCabinClasses(cabin_classes);
   }, [flights]);
 
   
@@ -77,6 +84,7 @@ const FlightList: React.FC = () => {
         result = result.filter(flight => flight.stop_count === stopCountFilter);
       }
       setFilteredFlights(result);
+      setPage(1);
     };
     getFilteredFlights();
   }, [filterCriteria, cabinClassFilter, stopCountFilter, flights]);
@@ -104,9 +112,9 @@ const FlightList: React.FC = () => {
         style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
       >
         <option value="">All Cabin Classes</option>
-        <option value="Economy">Economy</option>
-        <option value="Business">Business</option>
-        <option value="First">First</option>
+        {uniqueCabinClasses.map((cabinClass, index) => (
+          <option key={index} value={cabinClass}>{cabinClass}</option>
+        ))}
       </select>
       <select 
         value={stopCountFilter === null ? '' : stopCountFilter} 
