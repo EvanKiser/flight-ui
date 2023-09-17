@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Grid, Button, Pagination } from '@mui/material';
+import { Paper, Typography, Grid, Button, Pagination, Slider } from '@mui/material';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -21,13 +21,24 @@ const getCompnayLogo = (carrier: string) => {
 
 const FlightList: React.FC = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
+  const [filteredFlights, setFilteredFlights] = useState<Flight[]>([]); // New state variable for filtered flights
   const [isLoading, setIsLoading] = useState(false);
   const [expandedFlightIndex, setExpandedFlightIndex] = useState<number | null>(null);
   const [page, setPage] = useState(1); // New state variable for current page
   const [itemsPerPage] = useState(20); // New state variable for items per page
+  const [filterCriteria, setFilterCriteria] = useState(''); // New state variable for filter criteria
+  const [uniqueCarriers, setUniqueCarriers] = useState<string[]>([]); // New state variable for unique carriers
+  const [cabinClassFilter, setCabinClassFilter] = useState(''); // New state variable for cabin class filter
+  const [stopCountFilter, setStopCountFilter] = useState<number | null>(null); // New state variable for stop count filter
 
   const location = useLocation();
 
+  useEffect(() => {
+    const carriers = Array.from(new Set(flights.map(flight => flight.carrier)));
+    setUniqueCarriers(carriers);
+  }, [flights]);
+
+  
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const payload = {
@@ -53,6 +64,23 @@ const FlightList: React.FC = () => {
     getFlightList();    
   });
 
+  useEffect(() => {
+    const getFilteredFlights = () => {
+      let result = flights;
+      if (filterCriteria) {
+        result = result.filter(flight => flight.carrier.includes(filterCriteria));
+      }
+      if (cabinClassFilter) {
+        result = result.filter(flight => flight.cabin_class.includes(cabinClassFilter));
+      }
+      if (stopCountFilter !== null) {
+        result = result.filter(flight => flight.stop_count === stopCountFilter);
+      }
+      setFilteredFlights(result);
+    };
+    getFilteredFlights();
+  }, [filterCriteria, cabinClassFilter, stopCountFilter, flights]);
+
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     console.log(value)
     setPage(value);
@@ -60,6 +88,36 @@ const FlightList: React.FC = () => {
 
   return (
     <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
+      <select 
+        value={filterCriteria} 
+        onChange={(e) => setFilterCriteria(e.target.value)} 
+        style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
+      >
+        <option value="">All Carriers</option>
+        {uniqueCarriers.map((carrier, index) => (
+          <option key={index} value={carrier}>{carrier}</option>
+        ))}
+      </select>
+      <select 
+        value={cabinClassFilter} 
+        onChange={(e) => setCabinClassFilter(e.target.value)} 
+        style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
+      >
+        <option value="">All Cabin Classes</option>
+        <option value="Economy">Economy</option>
+        <option value="Business">Business</option>
+        <option value="First">First</option>
+      </select>
+      <select 
+        value={stopCountFilter === null ? '' : stopCountFilter} 
+        onChange={(e) => setStopCountFilter(e.target.value === '' ? null : parseInt(e.target.value))} 
+        style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
+      >
+        <option value="">Any Stop Count</option>
+        <option value="0">Nonstop only</option>
+        <option value="1">1 Stop or fewer</option>
+        <option value="2">2 Stops or fewer</option>
+      </select>
       <Typography variant="h4" style={{ textAlign: 'center', margin: '40px 0 20px 0' }}> {/* Increased top margin */}
         Available Flights
       </Typography>
@@ -74,7 +132,7 @@ const FlightList: React.FC = () => {
         </Typography>
       ) : (  
         <Grid container spacing={3} direction="row" justifyContent="center">
-          {flights.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((flight, index) => (
+          {filteredFlights.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((flight, index) => (
             <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
               <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px', borderRadius: '20px', minHeight: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Grid container spacing={2} style={{ width: '100%', textAlign: 'center' }}>
@@ -164,7 +222,7 @@ const FlightList: React.FC = () => {
           ))}
         </Grid>
       )}
-      <Pagination count={Math.ceil(flights.length / itemsPerPage)} page={page} onChange={handlePageChange} />
+      <Pagination count={Math.ceil(filteredFlights.length / itemsPerPage)} page={page} onChange={handlePageChange} />
     </div>
   );
 };
