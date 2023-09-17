@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Grid, Button, Pagination, Slider } from '@mui/material';
+import React, { useEffect, useState, useRef } from 'react';
+import { Paper, Typography, Grid, Button, Pagination } from '@mui/material';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -45,6 +45,7 @@ const FlightList: React.FC = () => {
     setUniqueCabinClasses(cabin_classes);
   }, [flights]);
 
+  const hasFetchedFlights = useRef(false);
   
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -55,9 +56,9 @@ const FlightList: React.FC = () => {
       returnDate: query.get('rd'),
     };
     const getFlightList = async () => {
-      if (flights.length > 0) return;
-      if (!isLoading) {
+      if (!hasFetchedFlights.current && !isLoading) {
         setIsLoading(true);
+        hasFetchedFlights.current = true;
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/flight/search`, payload)
         .then(response => {
           setFlights(response.data)
@@ -69,7 +70,7 @@ const FlightList: React.FC = () => {
       }
     };
     getFlightList();    
-  });
+  }, [isLoading, location.search]);
 
   useEffect(() => {
     const getFilteredFlights = () => {
