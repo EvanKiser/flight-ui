@@ -23,6 +23,8 @@ const FlightList: React.FC = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedFlightIndex, setExpandedFlightIndex] = useState<number | null>(null);
+  const [page, setPage] = useState(1); // New state variable for current page
+  const [itemsPerPage] = useState(20); // New state variable for items per page
 
   const location = useLocation();
 
@@ -51,6 +53,11 @@ const FlightList: React.FC = () => {
     getFlightList();    
   });
 
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    console.log(value)
+    setPage(value);
+  };
+
   return (
     <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
       <Typography variant="h4" style={{ textAlign: 'center', margin: '40px 0 20px 0' }}> {/* Increased top margin */}
@@ -67,7 +74,7 @@ const FlightList: React.FC = () => {
         </Typography>
       ) : (  
         <Grid container spacing={3} direction="row" justifyContent="center">
-          {flights.map((flight, index) => (
+          {flights.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((flight, index) => (
             <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
               <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px', borderRadius: '20px', minHeight: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Grid container spacing={2} style={{ width: '100%', textAlign: 'center' }}>
@@ -157,6 +164,7 @@ const FlightList: React.FC = () => {
           ))}
         </Grid>
       )}
+      <Pagination count={Math.ceil(flights.length / itemsPerPage)} page={page} onChange={handlePageChange} />
     </div>
   );
 };
