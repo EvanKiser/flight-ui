@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Paper, Typography, Grid, Button, Pagination } from '@mui/material';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import SearchForm from './SearchForm';
+import dayjs from 'dayjs';
 
 const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -35,6 +37,16 @@ const FlightList: React.FC = () => {
 
   const location = useLocation();
 
+  const payload = useMemo(() => {
+    const query = new URLSearchParams(location.search);
+    return {
+      origin_code: query.get('oc'),
+      destination_code: query.get('dc'),
+      departureDate: dayjs(query.get('dd')),
+      returnDate: dayjs(query.get('rd')),
+    };
+  }, [location.search]);
+
   useEffect(() => {
     const carriers = Array.from(new Set(flights.map(flight => flight.carrier)));
     setUniqueCarriers(carriers);
@@ -48,13 +60,6 @@ const FlightList: React.FC = () => {
   const hasFetchedFlights = useRef(false);
   
   useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const payload = {
-      origin_code: query.get('oc'),
-      destination_code: query.get('dc'),
-      departureDate: query.get('dd'),
-      returnDate: query.get('rd'),
-    };
     const getFlightList = async () => {
       if (!hasFetchedFlights.current && !isLoading) {
         setIsLoading(true);
@@ -70,7 +75,7 @@ const FlightList: React.FC = () => {
       }
     };
     getFlightList();    
-  }, [isLoading, location.search]);
+  }, [isLoading, payload]);
 
   useEffect(() => {
     const getFilteredFlights = () => {
@@ -96,37 +101,46 @@ const FlightList: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
-      <select 
-        value={filterCriteria} 
-        onChange={(e) => setFilterCriteria(e.target.value)} 
-        style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
-      >
-        <option value="">All Carriers</option>
-        {uniqueCarriers.map((carrier, index) => (
-          <option key={index} value={carrier}>{carrier}</option>
-        ))}
-      </select>
-      <select 
-        value={cabinClassFilter} 
-        onChange={(e) => setCabinClassFilter(e.target.value)} 
-        style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
-      >
-        <option value="">All Cabin Classes</option>
-        {uniqueCabinClasses.map((cabinClass, index) => (
-          <option key={index} value={cabinClass}>{cabinClass}</option>
-        ))}
-      </select>
-      <select 
-        value={stopCountFilter === null ? '' : stopCountFilter} 
-        onChange={(e) => setStopCountFilter(e.target.value === '' ? null : parseInt(e.target.value))} 
-        style={{ margin: '20px 0', padding: '10px', width: '200px' }} 
-      >
-        <option value="">Any Stop Count</option>
-        <option value="0">Nonstop only</option>
-        <option value="1">1 Stop or fewer</option>
-        <option value="2">2 Stops or fewer</option>
-      </select>
+    <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <SearchForm requestFromFlightListPage={true} initialSearchParams={payload}/>
+      <Grid container spacing={2} justifyContent="center" style={{ margin: '20px 0' }}>
+        <Grid item>
+          <select 
+            value={filterCriteria} 
+            onChange={(e) => setFilterCriteria(e.target.value)} 
+            style={{ padding: '10px', width: '200px' }} 
+          >
+            <option value="">All Carriers</option>
+            {uniqueCarriers.map((carrier, index) => (
+              <option key={index} value={carrier}>{carrier}</option>
+            ))}
+          </select>
+        </Grid>
+        <Grid item>
+          <select 
+            value={cabinClassFilter} 
+            onChange={(e) => setCabinClassFilter(e.target.value)} 
+            style={{ padding: '10px', width: '200px' }} 
+          >
+            <option value="">All Cabin Classes</option>
+            {uniqueCabinClasses.map((cabinClass, index) => (
+              <option key={index} value={cabinClass}>{cabinClass}</option>
+            ))}
+          </select>
+        </Grid>
+        <Grid item>
+          <select 
+            value={stopCountFilter === null ? '' : stopCountFilter} 
+            onChange={(e) => setStopCountFilter(e.target.value === '' ? null : parseInt(e.target.value))} 
+            style={{ padding: '10px', width: '200px' }} 
+          >
+            <option value="">Any Stop Count</option>
+            <option value="0">Nonstop only</option>
+            <option value="1">1 Stop or fewer</option>
+            <option value="2">2 Stops or fewer</option>
+          </select>
+        </Grid>
+      </Grid>
       <Typography variant="h4" style={{ textAlign: 'center', margin: '40px 0 20px 0' }}> {/* Increased top margin */}
         Available Flights
       </Typography>
@@ -150,7 +164,7 @@ const FlightList: React.FC = () => {
                   </Grid>
                   <Grid item xs={4}>
                     <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                      {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)}
+                      {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)} {flight.days_difference}
                     </Typography>
                     <Typography variant="h6" color='grey'>
                     {flight.cabin_class} | {flight.carrier}

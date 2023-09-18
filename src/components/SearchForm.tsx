@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon, Typography, InputAdornment } from '@mui/material';
+import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon, InputAdornment } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useNavigate } from 'react-router-dom';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 interface Airport {
@@ -16,29 +16,24 @@ interface Airport {
   region: string
 }
 
-const SearchForm: React.FC = () => {
-  const [origin, setOrigin] = React.useState('');
-  const [destination, setDestination] = React.useState('');
-  const [departureDate, setDepartureDate] = React.useState<dayjs.Dayjs | null>(null);
-  const [returnDate, setReturnDate] = React.useState<dayjs.Dayjs | null>(null);
+interface searchFormProps {
+  requestFromFlightListPage: boolean;
+  initialSearchParams: {
+    origin_code: string | null;
+    destination_code: string | null;
+    departureDate: dayjs.Dayjs | null;
+    returnDate: dayjs.Dayjs | null;
+  };
+}
+
+const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, initialSearchParams }) => {
+  const [origin, setOrigin] = useState(initialSearchParams.origin_code || '');
+  const [destination, setDestination] = useState(initialSearchParams.destination_code || '');
+  const [departureDate, setDepartureDate] = useState(initialSearchParams.departureDate || null);
+  const [returnDate, setReturnDate] = useState(initialSearchParams.returnDate || null);
   const [options, setOptions] = useState<string[]>([]);
   const [destinationOptions, setDestinationOptions] = useState<string[]>([]);
   const [tripType, setTripType] = React.useState('one_way');
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchDefaultOrigin = async () => {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/flight/default_origin`);
-      const newOrigin: Airport = response.data;
-      const newOriginName = (
-        newOrigin.airport_code + " " + newOrigin.city_name + ", " + newOrigin.region
-      );
-      setOrigin(newOriginName);
-    };
-
-    fetchDefaultOrigin();
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -82,6 +77,8 @@ const SearchForm: React.FC = () => {
     };
   }, [origin]);
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -96,19 +93,13 @@ const SearchForm: React.FC = () => {
     const returnDateString = returnDate ? returnDate.format('MM-DD-YYYY') : null;
 
     navigate(`/flights?oc=${origin_code}&dc=${destination_code}&dd=${departureDateString}&rd=${returnDateString}`);
+    if (requestFromFlightListPage) {
+      window.location.reload();
+    }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <Typography variant="h1" style={{ fontFamily: '"Roboto Slab", serif', fontWeight: 500, color: '#333', marginBottom: '0px' }}>
-          PointsParty.io
-        </Typography>
-        <Typography variant="h4" style={{ fontFamily: '"Roboto", sans-serif', color: 'grey', marginBottom: '10px' }}>
-          Google Flights for Points
-        </Typography>
-      </div>
-      <Paper elevation={3} style={{ padding: '50px', width: '70%', borderRadius: '20px' }}>
+    <Paper elevation={3} style={{ padding: '50px', width: '70%', borderRadius: '20px' }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <form onSubmit={handleSubmit}>
             <Grid container direction="row" spacing={3} alignItems="center">
@@ -252,7 +243,6 @@ const SearchForm: React.FC = () => {
           </form>
         </LocalizationProvider>
       </Paper>
-    </div>
   );
 };
 

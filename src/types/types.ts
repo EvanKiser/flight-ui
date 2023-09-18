@@ -41,4 +41,5 @@ export interface Flight {
     segments: Segment[];
     stop_count: number;
     layover_duration: Duration;
+    days_difference: number;
 }

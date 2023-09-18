@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
-import SearchForm from './components/SearchForm';
+import Home from './components/Home';
 import SignupForm from './components/SignupForm';
 import FlightList from './components/FlightList';
 
@@ -48,7 +48,7 @@ const App: React.FC = () => {
         <NavBar />
         <Routes>
           <Route path="/signup" element={<SignupForm />} />
-          <Route path="/" element={<SearchForm />} />
+          <Route path="/" element={<Home />} />
           <Route path="/flights" element={<FlightList />} />
         </Routes>
       </div>
