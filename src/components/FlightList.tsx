@@ -164,7 +164,20 @@ const FlightList: React.FC = () => {
                   </Grid>
                   <Grid item xs={4}>
                     <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                      {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)} {flight.days_difference}
+                      {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)}
+                      {flight.days_difference > 0 && (
+                         <span style={{
+                          position: 'relative',
+                          top: '-5px',
+                          left: '5px',
+                          fontSize: '0.8em',
+                          backgroundColor: '#f1f1f1',
+                          padding: '2px 5px',
+                          borderRadius: '50%'
+                        }}>
+                          +{flight.days_difference}
+                        </span>
+                      )}
                     </Typography>
                     <Typography variant="h6" color='grey'>
                     {flight.cabin_class} | {flight.carrier}

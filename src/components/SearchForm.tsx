@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon, InputAdornment } from '@mui/material';
+import { TextField, Button, Grid, Paper, MenuItem, ListItemIcon, InputAdornment, Typography } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,14 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
-import axios from 'axios';
 import dayjs from 'dayjs';
-
-interface Airport {
-  airport_code: string
-  city_name: string
-  region: string
-}
+import airports from '../airports.json';
+import { Airport } from '../types/types';
 
 interface searchFormProps {
   requestFromFlightListPage: boolean;
@@ -26,9 +21,15 @@ interface searchFormProps {
   };
 }
 
+const getAirportName = (iataCode: string | null) => {
+  if (!iataCode) return '';
+  const airport = airports.find((airport: Airport) => airport.iataCode === iataCode);
+  return airport ? airport.name : iataCode;
+};
+
 const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, initialSearchParams }) => {
-  const [origin, setOrigin] = useState(initialSearchParams.origin_code || '');
-  const [destination, setDestination] = useState(initialSearchParams.destination_code || '');
+  const [origin, setOrigin] = useState(getAirportName(initialSearchParams.origin_code) || '');
+  const [destination, setDestination] = useState(getAirportName(initialSearchParams.destination_code) || '');
   const [departureDate, setDepartureDate] = useState(initialSearchParams.departureDate || null);
   const [returnDate, setReturnDate] = useState(initialSearchParams.returnDate || null);
   const [options, setOptions] = useState<string[]>([]);
@@ -36,47 +37,24 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
   const [tripType, setTripType] = React.useState('one_way');
 
   useEffect(() => {
-    let active = true;
-
-    if (destination.length === 3) {
-      (async () => {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/flight/predictive_cities/${destination}`);
-        const airports: Airport[] = response.data;
-        const airportCodes = airports.map((airport: Airport) => {
-          return airport.airport_code + " " + airport.city_name + ", " + airport.region;
-        });
-        if (active) {
-          setDestinationOptions(airportCodes);
-        }
-      })();
-    }
-
-    return () => {
-      active = false;
-    };
-  }, [destination]);
-
-  useEffect(() => {
-    let active = true;
-
-    if (origin.length === 3) {
-      (async () => {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/flight/predictive_cities/${origin}`);
-        const airports: Airport[] = response.data;
-        const airportCodes = airports.map((airport: Airport) => {
-          return airport.airport_code + " " + airport.city_name + ", " + airport.region;
-        });
-        if (active) {
-          setOptions(airportCodes);
-        }
-      })();
-    }
-
-    return () => {
-      active = false;
-    };
+    const filteredAirports = airports.filter((airport: Airport) => 
+      airport.iataCode.toLowerCase().includes(origin.toLowerCase()) ||
+      airport.name.toLowerCase().includes(origin.toLowerCase())
+    );
+    const airportOptions = filteredAirports.map((airport: Airport) => `${airport.iataCode} ${airport.name}`);
+    setOptions(airportOptions);
   }, [origin]);
-
+  
+  
+  useEffect(() => {
+    const filteredAirports = airports.filter((airport: Airport) => 
+      airport.iataCode.toLowerCase().includes(destination.toLowerCase()) ||
+      airport.name.toLowerCase().includes(destination.toLowerCase())
+    );
+    const airportOptions = filteredAirports.map((airport: Airport) => `${airport.iataCode} ${airport.name}`);
+    setDestinationOptions(airportOptions);
+  }, [destination]);
+  
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -112,7 +90,12 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                   renderInput={(params) => <TextField {...params} label="Origin" required />}
                   renderOption={(props, option, { selected }) => (
                     <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
-                      {option}
+                      <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '8px' }}>
+                        {option.substring(option.indexOf(' ') + 1)}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {option.substring(0, option.indexOf(' '))}
+                      </Typography>
                     </li>
                   )}
                   filterOptions={(x, { inputValue }) => {
@@ -137,7 +120,12 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                   renderInput={(params) => <TextField {...params} label="Destination" placeholder="Where ya headed?" required/>}
                   renderOption={(props, option, { selected }) => (
                     <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
-                      {option}
+                      <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '8px' }}>
+                        {option.substring(option.indexOf(' ') + 1)}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {option.substring(0, option.indexOf(' '))}
+                      </Typography>
                     </li>
                   )}
                   filterOptions={(x, { inputValue }) => {
