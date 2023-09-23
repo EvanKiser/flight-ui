@@ -102,7 +102,7 @@ const FlightList: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100%', padding: isSmallScreen ? '0 10px' : '0 20px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ width: '95%', padding: isSmallScreen ? '0 10px' : '0 20px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <SearchForm requestFromFlightListPage={true} initialSearchParams={payload}/>
       <Grid container spacing={2} justifyContent="center" style={{ margin: '20px 0' }}>
         <Grid item>
