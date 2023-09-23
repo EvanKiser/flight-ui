@@ -144,7 +144,8 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                     label="Departure Date"
                     value={departureDate}
                     onChange={(newDate) => setDepartureDate(newDate)}
-                    maxDate={returnDate}
+                    minDate={dayjs()}
+                    maxDate={returnDate || dayjs().add(1, 'year')}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
@@ -154,7 +155,8 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                       label="Return Date"
                       value={returnDate}
                       onChange={(newDate) => setReturnDate(newDate)}
-                      minDate={departureDate}
+                      minDate={departureDate || dayjs().add(1, 'day')} // Set minimum date to either the departure date or one day from today
+                      maxDate={dayjs().add(1, 'year')}
                       slotProps={{ textField: { fullWidth: true } }}
                     />
                   </Grid>
