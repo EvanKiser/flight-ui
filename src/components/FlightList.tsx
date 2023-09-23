@@ -10,7 +10,6 @@ const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   let hours = dateObj.getUTCHours(); // Gets the hour in UTC time
   let minutes: number | string = dateObj.getUTCMinutes(); // Gets the minutes in UTC time
-  console.log(hours, minutes)
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours %= 12;
   hours = hours || 12; // the hour '0' should be '12'

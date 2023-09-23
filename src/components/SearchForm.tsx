@@ -24,7 +24,7 @@ interface searchFormProps {
 const getAirportName = (iataCode: string | null) => {
   if (!iataCode) return '';
   const airport = airports.find((airport: Airport) => airport.iataCode === iataCode);
-  return airport ? airport.name : iataCode;
+  return airport ? `${airport.iataCode} ${airport.name}` : ''
 };
 
 const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, initialSearchParams }) => {
@@ -98,12 +98,6 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                       </Typography>
                     </li>
                   )}
-                  filterOptions={(x, { inputValue }) => {
-                    if (origin.length > 3) {
-                      return x.filter(option => option.toLowerCase().includes(inputValue.toLowerCase()));
-                    }
-                    return x;
-                  }}
                   noOptionsText={null}
                   PaperComponent={({ children }) =>
                     (options.length > 0 && origin.length >= 3) ? <Paper>{children}</Paper> : null
@@ -128,12 +122,6 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                       </Typography>
                     </li>
                   )}
-                  filterOptions={(x, { inputValue }) => {
-                    if (destination.length > 3) {
-                      return x.filter(option => option.toLowerCase().includes(inputValue.toLowerCase()));
-                    }
-                    return x;
-                  }}
                   noOptionsText={null}
                   PaperComponent={({ children }) =>
                     (destinationOptions.length > 0 && destination.length >= 3) ? <Paper elevation={3}>{children}</Paper> : null
