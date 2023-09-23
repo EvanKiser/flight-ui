@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Paper, Typography, Grid, Button, Pagination } from '@mui/material';
+import { Paper, Typography, Grid, Button, Pagination, useTheme, useMediaQuery } from '@mui/material';
 import { Flight } from '../types/types';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -35,6 +35,8 @@ const FlightList: React.FC = () => {
   const [stopCountFilter, setStopCountFilter] = useState<number | null>(null); // New state variable for stop count filter
 
   const location = useLocation();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const payload = useMemo(() => {
     const query = new URLSearchParams(location.search);
@@ -100,7 +102,7 @@ const FlightList: React.FC = () => {
   };
 
   return (
-    <div style={{ width: '100%', padding: '0 20px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ width: '100%', padding: isSmallScreen ? '0 10px' : '0 20px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <SearchForm requestFromFlightListPage={true} initialSearchParams={payload}/>
       <Grid container spacing={2} justifyContent="center" style={{ margin: '20px 0' }}>
         <Grid item>
@@ -148,111 +150,113 @@ const FlightList: React.FC = () => {
           Loading...
         </Typography>
       }
-      {flights.length === 0 && !isLoading ? (
+      {filteredFlights.length === 0 && !isLoading ? (
         <Typography variant="h6" style={{ textAlign: 'center', marginTop: '20px' }}> {/* Centered no flights message */}
           No flights available.
         </Typography>
       ) : (  
         <Grid container spacing={3} direction="row" justifyContent="center">
           {filteredFlights.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((flight, index) => (
-            <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
-              <Paper elevation={3} style={{ maxWidth: '1200px', width: '100%', margin: 'auto', padding: '16px', borderRadius: '20px', minHeight: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <Grid container spacing={2} style={{ width: '100%', textAlign: 'center' }}>
-                  <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
-                  <img src={getCompnayLogo(flight.carrier)} alt={`${flight.carrier} logo`} style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                      {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)}
-                      {flight.days_difference > 0 && (
-                         <span style={{
-                          position: 'relative',
-                          top: '-5px',
-                          left: '5px',
-                          fontSize: '0.8em',
-                          backgroundColor: '#f1f1f1',
-                          padding: '2px 5px',
-                          borderRadius: '50%'
-                        }}>
-                          +{flight.days_difference}
-                        </span>
-                      )}
-                    </Typography>
-                    <Typography variant="h6" color='grey'>
-                    {flight.cabin_class} | {flight.carrier}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
-                    <Typography variant="h5" style={{ textAlign: 'left' }}>
-                      {flight.duration.hours} hr {flight.duration.minutes} min
-                    </Typography>
-                    <Typography variant="h6" color='grey' gutterBottom style={{ textAlign: 'left' }}>
-                      {`${flight.origin}-${flight.destination}`}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
-                    <Typography variant="h5" style={{ textAlign: 'left' }}>
-                      {flight.stop_count === 0 ? 'Nonstop' : flight.stop_count === 1 ? '1 Stop' : `${flight.stop_count} Stops`}
-                    </Typography>
-                    {flight.stop_count === 1 ? (
-                      <Typography variant="h6" color='grey' gutterBottom style={{ textAlign: 'left' }}>
-                        {flight.layover_duration.hours} hr {flight.layover_duration.minutes} min {flight.segments[0]!.layover!.layover_airport}
-                      </Typography>
-                    ): (flight.stop_count > 1 ? (
-                      <Typography variant="subtitle1" color='grey' gutterBottom style={{ textAlign: 'left' }}>
-                        hey
-                      </Typography>
-                    ) : null )}
-                  </Grid>
-                  <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
-                    <Typography variant="h5">
-                      {flight.point_cost} Points
-                    </Typography>
-                    <Typography variant="h6" color='grey'>
-                      +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.dollar_cost)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={1} style={{ textAlign: 'right' }}>
-                    <Button onClick={() => setExpandedFlightIndex(expandedFlightIndex === index ? null : index)}>
-                      <img src={process.env.PUBLIC_URL + '/expand_arrow.png'} alt='down arrow' style={{ width: '40px', height: '40px' }} />
-                    </Button>
-                  </Grid>
-                  {expandedFlightIndex === index && (
-                  <Grid item xs={12}>
-                    {flight.segments.map((segment, i) => (
-                      <div key={i} style={{ padding: '15px', border: '1px solid #ccc', margin: '10px 0', borderRadius: '8px', backgroundColor: 'linear-gradient(45deg, #ffffff 70%, #f0f0f0 90%)' }}>
-                        <Typography gutterBottom style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-                          Segment {i+1}: {segment.flight_num} - {segment.aircraft_type}
-                        </Typography>
-                        <Grid container spacing={2}>
-                          <Grid item xs={4}>
-                            <Typography variant="subtitle1">Departure</Typography>
-                            <Typography>{formatTime(segment.departure_time)}</Typography>
-                            <Typography>({segment.origin})</Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="subtitle1">Arrival</Typography>
-                            <Typography>{formatTime(segment.arrival_time)}</Typography>
-                            <Typography>({segment.destination})</Typography>
-                          </Grid>
-                          <Grid item xs={4}>
-                            <Typography variant="subtitle1">Duration</Typography>
-                            <Typography>{segment.flight_time.hours}h {segment.flight_time.minutes}m</Typography>
-                          </Grid>
-                        </Grid>
-                        {segment.layover && (
-                          <div style={{ backgroundColor: '#e0e0e0', padding: '10px', borderRadius: '8px', margin: '10px 0' }}>
-                            <Typography gutterBottom style={{ fontWeight: 'bold' }}>
-                              Layover: {segment.layover.duration?.hours}h {segment.layover.duration?.minutes}m at {segment.layover.layover_airport}
-                            </Typography>
-                          </div>
+          <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center' }} key={index}>
+            <div 
+              onClick={() => isSmallScreen && setExpandedFlightIndex(expandedFlightIndex === index ? null : index)}
+              style={{width: isSmallScreen ? '100%' : '80%', maxWidth: '1200px'}}
+            >
+              <Paper elevation={3} style={{ 
+                padding: '16px', 
+                borderRadius: '20px', 
+                minHeight: '100px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                width: '100%'
+              }}>
+                  <Grid container spacing={2} style={{ width: '100%', textAlign: 'center' }}>
+                    <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
+                    <img src={getCompnayLogo(flight.carrier)} alt={`${flight.carrier} logo`} style={{ width: '60px', height: '60px', objectFit: 'contain' }} />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <Typography variant="h5" style={{ fontWeight: 'bold' }}>
+                        {formatTime(flight.departure_time)} - {formatTime(flight.arrival_time)}
+                        {flight.days_difference > 0 && (
+                          <span style={{
+                            position: 'relative',
+                            top: '-5px',
+                            left: '5px',
+                            fontSize: '0.8em',
+                            backgroundColor: '#f1f1f1',
+                            padding: '2px 5px',
+                            borderRadius: '50%'
+                          }}>
+                            +{flight.days_difference}
+                          </span>
                         )}
-                      </div>
-                    ))}
+                      </Typography>
+                      <Typography variant="h6" color='grey'>
+                      {flight.cabin_class} | {flight.carrier}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3} style={{alignItems: 'center', justifyContent: 'center'}}>
+                      <Typography variant="h5" style={{ textAlign: 'left' }}>
+                        {flight.duration.hours} hr {flight.duration.minutes} min
+                      </Typography>
+                      <Typography variant="h5" style={{ textAlign: 'left' }}>
+                        {flight.stop_count === 0 ? 'Nonstop' : flight.stop_count === 1 ? '1 Stop' : `${flight.stop_count} Stops`}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
+                      <Typography variant="h5">
+                        {flight.point_cost} Points
+                      </Typography>
+                      <Typography variant="h6" color='grey'>
+                        +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.dollar_cost)}
+                      </Typography>
+                    </Grid>
+                    {!isSmallScreen && (
+                      <Grid item xs={1} style={{ textAlign: 'right' }}>
+                        <Button onClick={() => setExpandedFlightIndex(expandedFlightIndex === index ? null : index)}>
+                          <img src={process.env.PUBLIC_URL + '/expand_arrow.png'} alt='down arrow' style={{ width: '40px', height: '40px' }} />
+                        </Button>
+                      </Grid>
+                    )}
+                    {expandedFlightIndex === index && (
+                    <Grid item xs={12}>
+                      {flight.segments.map((segment, i) => (
+                        <div key={i} style={{ padding: '15px', border: '1px solid #ccc', margin: '10px 0', borderRadius: '8px' }}>
+                          <Typography gutterBottom style={{ fontWeight: 'bold', marginBottom: '10px' }}>
+                            Segment {i+1}: {segment.flight_num} - {segment.aircraft_type}
+                          </Typography>
+                          <Grid container spacing={2}>
+                            <Grid item xs={4}>
+                              <Typography variant="subtitle1">Departure</Typography>
+                              <Typography>{formatTime(segment.departure_time)}</Typography>
+                              <Typography>({segment.origin})</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="subtitle1">Arrival</Typography>
+                              <Typography>{formatTime(segment.arrival_time)}</Typography>
+                              <Typography>({segment.destination})</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="subtitle1">Duration</Typography>
+                              <Typography>{segment.flight_time.hours}h {segment.flight_time.minutes}m</Typography>
+                            </Grid>
+                          </Grid>
+                          {segment.layover && (
+                            <div style={{ backgroundColor: '#e0e0e0', padding: '10px', borderRadius: '8px', margin: '10px 0' }}>
+                              <Typography gutterBottom style={{ fontWeight: 'bold' }}>
+                                Layover: {segment.layover.duration?.hours}h {segment.layover.duration?.minutes}m at {segment.layover.layover_airport}
+                              </Typography>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </Grid>
+                  )}
                   </Grid>
-                )}
-                </Grid>
-              </Paper>
+                </Paper>
+              </div>
             </Grid>
           ))}
         </Grid>

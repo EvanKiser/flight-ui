@@ -10,6 +10,9 @@ import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import dayjs from 'dayjs';
 import airports from '../airports.json';
 import { Airport } from '../types/types';
+import Container from '@mui/material/Container';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 interface searchFormProps {
   requestFromFlightListPage: boolean;
@@ -35,6 +38,9 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
   const [options, setOptions] = useState<string[]>([]);
   const [destinationOptions, setDestinationOptions] = useState<string[]>([]);
   const [tripType, setTripType] = React.useState('one_way');
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const filteredAirports = airports.filter((airport: Airport) => 
@@ -77,148 +83,154 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
   };
 
   return (
-    <Paper elevation={3} style={{ padding: '50px', width: '70%', borderRadius: '20px' }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <form onSubmit={handleSubmit}>
-            <Grid container direction="row" spacing={3} alignItems="center">
-              <Grid item xs={tripType === 'round_trip' ? 3:4}>
-                <Autocomplete
-                  value={origin}
-                  options={options}
-                  getOptionLabel={(option) => option}
-                  onInputChange={(event, newInputValue) => setOrigin(newInputValue)}
-                  renderInput={(params) => <TextField {...params} label="Origin" required />}
-                  renderOption={(props, option, { selected }) => (
-                    <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
-                      <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '8px' }}>
-                        {option.substring(option.indexOf(' ') + 1)}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {option.substring(0, option.indexOf(' '))}
-                      </Typography>
-                    </li>
-                  )}
-                  noOptionsText={null}
-                  PaperComponent={({ children }) =>
-                    (options.length > 0 && origin.length >= 3) ? <Paper>{children}</Paper> : null
-                  }
-                />
-              </Grid>
-              <Grid item xs={tripType === 'round_trip' ? 3:4}>
-                <Autocomplete
-                  value={destination}
-                  options={destinationOptions}
-                  defaultValue={"Where to?"}
-                  getOptionLabel={(option) => option}
-                  onInputChange={(event, newInputValue) => setDestination(newInputValue)}
-                  renderInput={(params) => <TextField {...params} label="Destination" placeholder="Where ya headed?" required/>}
-                  renderOption={(props, option, { selected }) => (
-                    <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
-                      <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '8px' }}>
-                        {option.substring(option.indexOf(' ') + 1)}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {option.substring(0, option.indexOf(' '))}
-                      </Typography>
-                    </li>
-                  )}
-                  noOptionsText={null}
-                  PaperComponent={({ children }) =>
-                    (destinationOptions.length > 0 && destination.length >= 3) ? <Paper elevation={3}>{children}</Paper> : null
-                  }
-                />
-              </Grid>
-              <Grid item xs={tripType === 'round_trip' ? 3:4}>
-                <DatePicker
-                  label="Departure Date"
-                  value={departureDate}
-                  onChange={(newDate) => setDepartureDate(newDate)}
-                  maxDate={returnDate}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </Grid>
-              {tripType === 'round_trip' && (
-                <Grid item xs={3}>
+    <Container maxWidth="xl" style={{ display: 'flex', justifyContent: 'center' }}>
+      <Paper elevation={3} style={{ 
+        padding: isSmallScreen ? '20px' : '50px', 
+        width: isSmallScreen ? '100%' : '70%', 
+        borderRadius: '20px' 
+      }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <form onSubmit={handleSubmit}>
+              <Grid container direction="row" spacing={3} alignItems="center">
+                <Grid item xs={12} sm={tripType === 'round_trip' ? 3:4}>
+                  <Autocomplete
+                    value={origin}
+                    options={options}
+                    getOptionLabel={(option) => option}
+                    onInputChange={(event, newInputValue) => setOrigin(newInputValue)}
+                    renderInput={(params) => <TextField {...params} label="Origin" required />}
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
+                        <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '8px' }}>
+                          {option.substring(option.indexOf(' ') + 1)}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {option.substring(0, option.indexOf(' '))}
+                        </Typography>
+                      </li>
+                    )}
+                    noOptionsText={null}
+                    PaperComponent={({ children }) =>
+                      (options.length > 0 && origin.length >= 3) ? <Paper>{children}</Paper> : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={tripType === 'round_trip' ? 3:4}>
+                  <Autocomplete
+                    value={destination}
+                    options={destinationOptions}
+                    defaultValue={"Where to?"}
+                    getOptionLabel={(option) => option}
+                    onInputChange={(event, newInputValue) => setDestination(newInputValue)}
+                    renderInput={(params) => <TextField {...params} label="Destination" placeholder="Where ya headed?" required/>}
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props} style={{ borderBottom: '1px solid #ccc' }}>
+                        <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '8px' }}>
+                          {option.substring(option.indexOf(' ') + 1)}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {option.substring(0, option.indexOf(' '))}
+                        </Typography>
+                      </li>
+                    )}
+                    noOptionsText={null}
+                    PaperComponent={({ children }) =>
+                      (destinationOptions.length > 0 && destination.length >= 3) ? <Paper elevation={3}>{children}</Paper> : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={tripType === 'round_trip' ? 3:4}>
                   <DatePicker
-                    label="Return Date"
-                    value={returnDate}
-                    onChange={(newDate) => setReturnDate(newDate)}
-                    minDate={departureDate}
+                    label="Departure Date"
+                    value={departureDate}
+                    onChange={(newDate) => setDepartureDate(newDate)}
+                    maxDate={returnDate}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
-              )}
-              <Grid container item xs={12} spacing={3} alignItems="center" justifyContent="space-between">
-                <Grid item container xs={8} spacing={3} alignItems="center">
-                  <Grid item xs={6}>
-                    <TextField
-                      select
-                      fullWidth
-                      value='one_way'
-                      disabled
-                      onChange={(e) => setTripType(e.target.value)}
-                      variant="outlined"
-                      sx={{ 
-                        width: '100%',
-                        '.MuiOutlinedInput-root': { 
-                          borderRadius: '8px', 
-                          border: 'none', 
-                          '& fieldset': {
-                            border: 'none',
-                          },
-                        },
-                        '.MuiSelect-select': { 
-                          padding: '12px 24px', 
-                          display: 'flex', 
-                          alignItems: 'center' 
-                        },
-                        '.MuiInputLabel-outlined': { 
-                          transform: 'translate(14px, 16px)' 
-                        },
-                      }}
-                    >
-                      <MenuItem value="round_trip" sx={{ padding: '8px 24px' }}>
-                        <ListItemIcon> <SyncAltIcon /> </ListItemIcon> Round Trip
-                      </MenuItem>
-                      <MenuItem value="one_way" sx={{ padding: '8px 24px' }}>
-                        <ListItemIcon> <TrendingFlatIcon /> </ListItemIcon> One Way
-                      </MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      type="number"
-                      variant="outlined"
-                      fullWidth
-                      disabled
-                      value="1"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <AccessibilityNewIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        '.MuiOutlinedInput-root': { 
-                          '& fieldset': {
-                            border: 'none',
-                          },
-                        },
-                      }}
+                {tripType === 'round_trip' && (
+                  <Grid item xs={12} sm={3}>
+                    <DatePicker
+                      label="Return Date"
+                      value={returnDate}
+                      onChange={(newDate) => setReturnDate(newDate)}
+                      minDate={departureDate}
+                      slotProps={{ textField: { fullWidth: true } }}
                     />
                   </Grid>
-                </Grid>
-                <Grid item xs={2}>
-                <Button fullWidth variant="contained" color="primary" type="submit" sx={{ padding: '10px 20px', fontSize: '1.1rem' }}>
-                  Search
-                  </Button>
+                )}
+                <Grid container item xs={12} spacing={3} alignItems="center" justifyContent="space-between">
+                  <Grid item container xs={12} sm={8} spacing={3} alignItems="center">
+                    <Grid item xs={7} sm={6}>
+                      <TextField
+                        select
+                        fullWidth
+                        value='one_way'
+                        disabled
+                        onChange={(e) => setTripType(e.target.value)}
+                        variant="outlined"
+                        sx={{ 
+                          width: '100%',
+                          '.MuiOutlinedInput-root': { 
+                            borderRadius: '8px', 
+                            border: 'none', 
+                            '& fieldset': {
+                              border: 'none',
+                            },
+                          },
+                          '.MuiSelect-select': { 
+                            padding: '12px 24px', 
+                            display: 'flex', 
+                            alignItems: 'center' 
+                          },
+                          '.MuiInputLabel-outlined': { 
+                            transform: 'translate(14px, 16px)' 
+                          },
+                        }}
+                      >
+                        <MenuItem value="round_trip" sx={{ padding: '8px 24px' }}>
+                          <ListItemIcon> <SyncAltIcon /> </ListItemIcon> Round Trip
+                        </MenuItem>
+                        <MenuItem value="one_way" sx={{ padding: '8px 24px' }}>
+                          <ListItemIcon> <TrendingFlatIcon /> </ListItemIcon> One Way
+                        </MenuItem>
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={5} sm={2}>
+                      <TextField
+                        type="number"
+                        variant="outlined"
+                        fullWidth
+                        disabled
+                        value="1"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccessibilityNewIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          '.MuiOutlinedInput-root': { 
+                            '& fieldset': {
+                              border: 'none',
+                            },
+                          },
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12} sm={2}>
+                    <Button fullWidth variant="contained" color="primary" type="submit" sx={{ padding: '10px 20px', fontSize: '1.1rem' }}>
+                      Search
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </form>
-        </LocalizationProvider>
-      </Paper>
+            </form>
+          </LocalizationProvider>
+        </Paper>
+      </Container>
   );
 };
 
