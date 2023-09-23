@@ -145,7 +145,7 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                     value={departureDate}
                     onChange={(newDate) => setDepartureDate(newDate)}
                     minDate={dayjs()}
-                    maxDate={returnDate || dayjs().add(1, 'year')}
+                    maxDate={dayjs().add(1, 'year')}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
