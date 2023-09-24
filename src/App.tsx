@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Button, Hidden, useMediaQuery, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Button, useMediaQuery, useTheme } from '@mui/material';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import SignupForm from './components/SignupForm';
@@ -27,28 +27,15 @@ const App: React.FC = () => {
             PointsParty.io
           </Button>
           <div style={{ flexGrow: 1 }}></div>
-          <Hidden smDown>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              component={Link} 
-              to="/signup"
-              style={{ textTransform: 'none', fontSize: '16px' }}
-            >
-              Signup for Mailing List
-            </Button>
-          </Hidden>
-          <Hidden mdUp>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              component={Link} 
-              to="/signup"
-              style={{ textTransform: 'none', fontSize: '14px' }}
-            >
-              Signup
-            </Button>
-          </Hidden>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            component={Link} 
+            to="/signup"
+            style={{ textTransform: 'none', fontSize: isSmallScreen ? '14px' : '16px' }}
+          >
+            {isSmallScreen ? 'Signup' : 'Signup for Mailing List'}
+          </Button>
         </Toolbar>
       </AppBar>
     );

@@ -162,8 +162,8 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                   </Grid>
                 )}
                 <Grid container item xs={12} spacing={3} alignItems="center" justifyContent="space-between">
-                  <Grid item container xs={12} sm={8} spacing={3} alignItems="center">
-                    <Grid item xs={7} sm={6}>
+                  <Grid item container xs={12} spacing={3} alignItems="center">
+                    <Grid item xs={7} sm={6} sx={{ justifyContent: 'flex-start', display: 'flex' }}>
                       <TextField
                         select
                         fullWidth
@@ -222,7 +222,7 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                       />
                     </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={2}>
+                  <Grid item xs={12} sm={12} m={2}>
                     <Button fullWidth variant="contained" color="primary" type="submit" sx={{ padding: '10px 20px', fontSize: '1.1rem' }}>
                       Search
                     </Button>

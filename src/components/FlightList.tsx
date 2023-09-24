@@ -8,11 +8,11 @@ import dayjs from 'dayjs';
 
 const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  let hours = dateObj.getUTCHours(); // Gets the hour in UTC time
-  let minutes: number | string = dateObj.getUTCMinutes(); // Gets the minutes in UTC time
+  let hours: number | string = dateObj.getUTCHours();
+  let minutes: number | string = dateObj.getUTCMinutes();
   const ampm = hours >= 12 ? 'PM' : 'AM';
   hours %= 12;
-  hours = hours || 12; // the hour '0' should be '12'
+  hours = hours || 12;
   minutes = minutes < 10 ? '0' + minutes : minutes;
   return `${hours}:${minutes}${ampm}`;
 };
