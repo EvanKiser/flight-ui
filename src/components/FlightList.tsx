@@ -210,7 +210,7 @@ const FlightList: React.FC = () => {
                         {flight.point_cost} Points
                       </Typography>
                       <Typography variant="h6" color='grey'>
-                        +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.dollar_cost)}
+                        +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.taxes)} for taxes
                       </Typography>
                     </Grid>
                     {!isSmallScreen && (
