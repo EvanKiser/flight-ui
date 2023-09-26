@@ -34,8 +34,10 @@ export interface Flight {
     destination: string;
     departure_time: Date;
     arrival_time: Date;
-    point_cost: number;
+    cost_in_points: number;
+    cost_in_dollars: number;
     taxes: number;
+    value_per_point: number;
     duration: Duration;
     cabin_class: string;
     segments: Segment[];

@@ -204,10 +204,16 @@ const FlightList: React.FC = () => {
                       <Typography variant="h5" style={{ textAlign: 'left' }}>
                         {flight.stop_count === 0 ? 'Nonstop' : flight.stop_count === 1 ? '1 Stop' : `${flight.stop_count} Stops`}
                       </Typography>
+                      <Typography style={{ textAlign: 'left' }}>
+                        {(flight.value_per_point * 100).toFixed(2)} cents per point
+                      </Typography>
+                      <Typography style={{ textAlign: 'left' }}>
+                        ${flight.cost_in_dollars}
+                      </Typography>
                     </Grid>
                     <Grid item xs={2} style={{alignItems: 'center', justifyContent: 'center'}}>
                       <Typography variant="h5">
-                        {flight.point_cost} Points
+                        {flight.cost_in_points} Points
                       </Typography>
                       <Typography variant="h6" color='grey'>
                         +{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(flight.taxes)} for taxes
