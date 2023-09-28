@@ -65,9 +65,14 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(origin, destination, departureDate)
 
     if (!origin || !destination || !departureDate || (!returnDate && tripType === 'round_trip') ) {
       alert('All fields are required.');
+      return;
+    }
+    if (departureDate.isBefore(dayjs())) {
+      alert('Departure Date Is Not Valid.');
       return;
     }
     const origin_code = origin.split(' ')[0];
@@ -75,6 +80,7 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
     
     const departureDateString = departureDate.format('MM-DD-YYYY');
     const returnDateString = returnDate ? returnDate.format('MM-DD-YYYY') : null;
+    
 
     navigate(`/flights?oc=${origin_code}&dc=${destination_code}&dd=${departureDateString}&rd=${returnDateString}`);
     if (requestFromFlightListPage) {
