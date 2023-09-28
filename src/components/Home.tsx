@@ -11,7 +11,7 @@ const Home: React.FC = () => {
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
-      justifyContent: 'center', 
+      justifyContent: isSmallScreen ? 'start' : 'center', 
       height: '100vh',
       padding: isSmallScreen ? '20px' : '0px'
     }}>
