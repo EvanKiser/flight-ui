@@ -128,7 +128,8 @@ const FlightList: React.FC = () => {
           <select 
             value={stopCountFilter === null ? '' : stopCountFilter} 
             onChange={(e) => setStopCountFilter(e.target.value === '' ? null : parseInt(e.target.value))} 
-            style={{ padding: '10px', width: '200px' }} 
+            style={{height: '40px', padding: '10px', width: '200px', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px',
+            }}
           >
             <option value="">Any Stop Count</option>
             <option value="0">Nonstop only</option>

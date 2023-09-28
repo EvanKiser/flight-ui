@@ -20,24 +20,25 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({ title, option
     onChange(updatedSelected);
   };
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowOptions(false);
-      }
+useEffect(() => {
+  function handleClickOutside(event: MouseEvent) {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setShowOptions(false);
     }
-  
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-  
+  }
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
+
 
   return (
     <div style={{ position: 'relative' }} ref={dropdownRef}>
       <button
         style={{
+          height: '40px',
           padding: '10px',
           width: '200px',
           backgroundColor: '#fff',
@@ -63,11 +64,14 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({ title, option
             <div
               key={index}
               style={{
-                padding: '8px 16px',
-                borderBottom: '1px solid #f1f1f1',
+                zIndex: 1,
                 cursor: 'pointer',
                 backgroundColor: hoverIndex === index ? '#f1f1f1' : 'transparent',
-              }}
+                border: '1px solid #f1f1f1',
+                borderRadius: '4px',
+                width: '200px',  // Set the width to match the button
+                maxHeight: '200px',  // Set a max height
+              }}       
               onMouseEnter={() => setHoverIndex(index)}
               onMouseLeave={() => setHoverIndex(null)}
             >
