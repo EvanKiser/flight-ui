@@ -5,6 +5,8 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import SearchForm from './SearchForm';
 import dayjs from 'dayjs';
+import MultiSelectDropdown from './MultiSelectDropdown'; // Adjust the import path as needed
+
 
 const formatTime = (date: Date | string) => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -28,10 +30,10 @@ const FlightList: React.FC = () => {
   const [expandedFlightIndex, setExpandedFlightIndex] = useState<number | null>(null);
   const [page, setPage] = useState(1); // New state variable for current page
   const [itemsPerPage] = useState(20); // New state variable for items per page
-  const [filterCriteria, setFilterCriteria] = useState(''); // New state variable for filter criteria
+  const [airlineFilter, setAirlineFilter] = useState<string[]>([]); // New state variable for filter criteria
   const [uniqueCarriers, setUniqueCarriers] = useState<string[]>([]); // New state variable for unique carriers
   const [uniqueCabinClasses, setUniqueCabinClasses] = useState<string[]>([]); // New state variable for unique carriers
-  const [cabinClassFilter, setCabinClassFilter] = useState(''); // New state variable for cabin class filter
+  const [cabinClassFilter, setCabinClassFilter] = useState<string[]>([]);
   const [stopCountFilter, setStopCountFilter] = useState<number | null>(null); // New state variable for stop count filter
 
   const location = useLocation();
@@ -56,6 +58,7 @@ const FlightList: React.FC = () => {
   useEffect(() => {
     const cabin_classes = Array.from(new Set(flights.map(flight => flight.cabin_class)));
     setUniqueCabinClasses(cabin_classes);
+    setCabinClassFilter(cabin_classes);  // Initialize with all unique cabin classes
   }, [flights]);
 
   const hasFetchedFlights = useRef(false);
@@ -81,11 +84,11 @@ const FlightList: React.FC = () => {
   useEffect(() => {
     const getFilteredFlights = () => {
       let result = flights;
-      if (filterCriteria) {
-        result = result.filter(flight => flight.carrier.includes(filterCriteria));
+      if (Array.isArray(airlineFilter) && airlineFilter.length > 0) {
+        result = result.filter(flight => airlineFilter.includes(flight.carrier));
       }
-      if (cabinClassFilter) {
-        result = result.filter(flight => flight.cabin_class.includes(cabinClassFilter));
+      if (cabinClassFilter.length > 0) {
+        result = result.filter(flight => cabinClassFilter.includes(flight.cabin_class));
       }
       if (stopCountFilter !== null) {
         result = result.filter(flight => flight.stop_count === stopCountFilter);
@@ -94,7 +97,7 @@ const FlightList: React.FC = () => {
       setPage(1);
     };
     getFilteredFlights();
-  }, [filterCriteria, cabinClassFilter, stopCountFilter, flights]);
+  }, [airlineFilter, cabinClassFilter, stopCountFilter, flights]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     console.log(value)
@@ -106,28 +109,20 @@ const FlightList: React.FC = () => {
       <SearchForm requestFromFlightListPage={true} initialSearchParams={payload}/>
       <Grid container spacing={2} justifyContent="center" style={{ margin: '20px 0' }}>
         <Grid item>
-          <select 
-            value={filterCriteria} 
-            onChange={(e) => setFilterCriteria(e.target.value)} 
-            style={{ padding: '10px', width: '200px' }} 
-          >
-            <option value="">All Carriers</option>
-            {uniqueCarriers.map((carrier, index) => (
-              <option key={index} value={carrier}>{carrier}</option>
-            ))}
-          </select>
+          <MultiSelectDropdown
+            title="Airline Filter"
+            options={uniqueCarriers}
+            selected={Array.isArray(airlineFilter) ? airlineFilter : []} // Make sure airlineFilter is an array
+            onChange={(selectedOptions) => setAirlineFilter(selectedOptions)}
+          />
         </Grid>
         <Grid item>
-          <select 
-            value={cabinClassFilter} 
-            onChange={(e) => setCabinClassFilter(e.target.value)} 
-            style={{ padding: '10px', width: '200px' }} 
-          >
-            <option value="">All Cabin Classes</option>
-            {uniqueCabinClasses.map((cabinClass, index) => (
-              <option key={index} value={cabinClass}>{cabinClass}</option>
-            ))}
-          </select>
+          <MultiSelectDropdown
+            title="Cabin Class Filter"
+            options={uniqueCabinClasses}
+            selected={cabinClassFilter}
+            onChange={(selectedOptions) => setCabinClassFilter(selectedOptions)}
+          />
         </Grid>
         <Grid item>
           <select 
