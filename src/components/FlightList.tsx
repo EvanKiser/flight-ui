@@ -42,11 +42,12 @@ const FlightList: React.FC = () => {
 
   const payload = useMemo(() => {
     const query = new URLSearchParams(location.search);
+    console.log(query.get('dd'), dayjs(query.get('dd')), dayjs(query.get('dd'), 'MM-DD-YYYY'));
     return {
       origin_code: query.get('oc'),
       destination_code: query.get('dc'),
-      departureDate: dayjs(query.get('dd')),
-      returnDate: dayjs(query.get('rd')),
+      departureDate: dayjs(query.get('dd'), 'MM-DD-YYYY'),
+      returnDate: dayjs(query.get('rd'), 'MM-DD-YYYY'),
     };
   }, [location.search]);
 
