@@ -201,10 +201,11 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                         }}
                       >
                         <MenuItem value="round_trip" sx={{ padding: '8px 24px' }}>
-                          <ListItemIcon> <SyncAltIcon /> </ListItemIcon> Round Trip
+                        {!isSmallScreen ? (<> <ListItemIcon> <SyncAltIcon /> </ListItemIcon> Round Trip </>) : "Round Trip"}
+
                         </MenuItem>
                         <MenuItem value="one_way" sx={{ padding: '8px 24px' }}>
-                          <ListItemIcon> <TrendingFlatIcon /> </ListItemIcon> One Way
+                        {!isSmallScreen ? (<> <ListItemIcon> <TrendingFlatIcon /> </ListItemIcon> One Way </>) : "One Way"}
                         </MenuItem>
                       </TextField>
                     </Grid>
