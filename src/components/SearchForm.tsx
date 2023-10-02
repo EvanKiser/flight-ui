@@ -187,12 +187,16 @@ const SearchForm: React.FC<searchFormProps> = ({ requestFromFlightListPage, init
                             },
                           },
                           '.MuiSelect-select': { 
-                            padding: '12px 24px', 
-                            display: 'flex', 
-                            alignItems: 'center' 
+                            paddingRight: '32px', // Increase right padding to make room for the dropdown indicator
                           },
                           '.MuiInputLabel-outlined': { 
-                            transform: 'translate(14px, 16px)' 
+                            transform: 'translate(8px, 16px) scale(1)', // Moved label closer to the icon
+                            '&.MuiInputLabel-shrink': {
+                              transform: 'translate(8px, -6px) scale(0.75)', // Adjust label position when it shrinks
+                            },
+                          },
+                          '.MuiSelect-icon': { // Target the dropdown indicator
+                            right: '8px', // Adjust its right position
                           },
                         }}
                       >
